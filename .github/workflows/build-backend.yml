@@ -1,0 +1,41 @@
+name: Build Backend Project
+
+on:
+    push:
+        paths:
+            - server/**
+    pull_request:
+        paths:
+            - server/**
+
+jobs:
+    build:
+        name: Build backend project
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [22.12.0]
+
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Install root dependencies and set up Husky
+              run: |
+                  npm ci
+                  npx husky install
+                  chmod +x .husky/*
+
+            - name: Install backend dependencies
+              working-directory: ./server
+              run: npm ci
+
+            - name: Build
+              working-directory: ./server
+              run: npm run build

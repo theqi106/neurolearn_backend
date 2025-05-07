@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Check for changed files
+CHANGED_FILES=$(git diff --cached --name-only)
+
+if echo "$CHANGED_FILES" | grep -q "^client/"; then
+  echo "Running lint-staged for client..."
+  (cd client && npm run lint-staged)
+fi
+
+if echo "$CHANGED_FILES" | grep -q "^server/"; then
+  echo "Running lint-staged for server..."
+  (cd server && npm run lint-staged)
+fi
