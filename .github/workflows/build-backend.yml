@@ -3,10 +3,14 @@ name: Build Backend Project
 on:
     push:
         paths:
-            - server/**
+            - '**/*.ts'
+            - 'package.json'
+            - 'tsconfig*.json'
     pull_request:
         paths:
-            - server/**
+            - '**/*.ts'
+            - 'package.json'
+            - 'tsconfig*.json'
 
 jobs:
     build:
@@ -33,9 +37,7 @@ jobs:
                   chmod +x .husky/*
 
             - name: Install backend dependencies
-              working-directory: ./server
               run: npm ci
 
             - name: Build
-              working-directory: ./server
               run: npm run build
