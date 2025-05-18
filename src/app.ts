@@ -6,6 +6,8 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './utils/swagger';
 import notFoundMiddleware from './middlewares/errors/notFound';
 import errorHandlerMiddleware from './middlewares/errors/errorHandler';
 
@@ -64,6 +66,9 @@ app.use('/api', limiter);
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
+
+// Swagger documentation route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Serve all static files inside public directory.
 app.use('/static', express.static('public'));

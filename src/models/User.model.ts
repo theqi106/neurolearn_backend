@@ -3,6 +3,96 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UserT } from '../interfaces/User';
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The user's full name
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: The user's email address
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: The user's password (min 6 characters)
+ *         role:
+ *           type: string
+ *           enum: [user, admin, instructor]
+ *           default: user
+ *           description: The user's role in the system
+ *         avatar:
+ *           type: object
+ *           properties:
+ *             public_id:
+ *               type: string
+ *             url:
+ *               type: string
+ *         isVerified:
+ *           type: boolean
+ *           default: false
+ *           description: Whether the user's email is verified
+ *         purchasedCourses:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uuid
+ *           description: Array of purchased course IDs
+ *         uploadedCourses:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uuid
+ *           description: Array of uploaded course IDs
+ *         introduce:
+ *           type: string
+ *           description: User's introduction
+ *         profession:
+ *           type: string
+ *           description: User's profession
+ *         phoneNumber:
+ *           type: string
+ *           description: User's phone number
+ *         address:
+ *           type: string
+ *           description: User's address
+ *         age:
+ *           type: number
+ *           minimum: 0
+ *           description: User's age
+ *         rating:
+ *           type: number
+ *           description: User's rating
+ *         student:
+ *           type: number
+ *           description: Number of students
+ *         socialLinks:
+ *           type: object
+ *           properties:
+ *             facebook:
+ *               type: string
+ *             twitter:
+ *               type: string
+ *             linkedin:
+ *               type: string
+ *             instagram:
+ *               type: string
+ *       example:
+ *         name: John Doe
+ *         email: john@example.com
+ *         role: user
+ *         isVerified: false
+ */
+
 export const UserSchema: Schema<UserT> = new Schema(
     {
         name: {
