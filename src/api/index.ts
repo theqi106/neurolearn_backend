@@ -12,7 +12,7 @@ import incomeRoutes from '../routes/income.route';
 
 const router = express.Router();
 
-router.use('/user', userRoutes);
+router.use('/users', userRoutes);
 
 router.use('/courses', courseRoutes);
 
@@ -22,9 +22,9 @@ router.use('/notifications', notificationRoutes);
 
 router.use('/layout', layoutRoutes);
 
-router.use('/level', levelRoutes);
+router.use('/levels', levelRoutes);
 
-router.use('/category', categoryRoutes);
+router.use('/categories', categoryRoutes);
 
 router.use('/quizzes', quizRoutes);
 
