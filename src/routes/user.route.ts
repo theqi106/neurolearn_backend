@@ -80,10 +80,13 @@ router.post('/register', registrationUser);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
+ *              required:
  *               - activation_token
+ *               - activation_code
  *             properties:
  *               activation_token:
+ *                 type: string
+ *               activation_code:
  *                 type: string
  *     responses:
  *       200:

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const serverUrl = process.env.SERVER_URL || 'http://localhost:8000';
+const serverUrl = process.env.NODE_ENV === 'production' ? process.env.SERVER_URL : 'http://localhost:8000';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const options: swaggerJsdoc.Options = {
