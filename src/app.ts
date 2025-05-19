@@ -34,8 +34,9 @@ app.use(express.json({ limit: '50mb' }));
 // cookie parser
 app.use(cookieParser());
 
-const allowedOrigins = process.env.ORIGIN?.split(',') || [];
-allowedOrigins.push('http://localhost:3000'); // Add this line
+const allowedOrigins = Array.from(
+    new Set([...(process.env.ORIGIN?.split(',') || []), 'http://localhost:3000', 'http://localhost:8000'])
+);
 
 // cors
 app.use(
