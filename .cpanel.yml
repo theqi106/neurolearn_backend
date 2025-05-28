@@ -1,0 +1,5 @@
+---
+deployment:
+    tasks:
+        - export DEPLOYPATH=/home/academix.id.vn/
+        - /bin/cp -R * $DEPLOYPATH
