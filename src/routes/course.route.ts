@@ -13,16 +13,12 @@ import {
     getPurchasedCourseByUser,
     getSingleCourse,
     getTopCourses,
-    getTopRatedCoursesController,
     updateCourse,
     uploadCourse,
     getCourseStatistics,
     getCoursesByUser,
     searchCoursesAndInstructors,
     getUploadedCourseByInstructor,
-    createSection,
-    reorderSection,
-    updateSection,
     createLesson,
     reorderLesson,
     updateLesson,
@@ -42,6 +38,7 @@ import {
     getCoursesWithSort
 } from '../controllers/course.controller';
 import { getUserInfo, updateAccessToken } from '../controllers/user.controller';
+import { createSection, updateSection } from '@/controllers/section.controller';
 
 /**
  * @swagger
@@ -642,42 +639,7 @@ router.put('/create-section/:id', updateAccessToken, isAuthenticated, createSect
  *       401:
  *         description: Not authenticated
  */
-router.put('/reorder-section/:id', updateAccessToken, isAuthenticated, reorderSection);
 
-/**
- * @swagger
- * /api/courses/update-section/{id}:
- *   put:
- *     summary: Update section
- *     tags: [Courses]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - sectionId
- *               - title
- *             properties:
- *               sectionId:
- *                 type: string
- *               title:
- *                 type: string
- *     responses:
- *       200:
- *         description: Section updated successfully
- *       401:
- *         description: Not authenticated
- */
 router.put('/update-section/:id', updateAccessToken, isAuthenticated, updateSection);
 
 /**
