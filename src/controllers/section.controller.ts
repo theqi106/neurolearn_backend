@@ -6,7 +6,7 @@ import ErrorHandler from '../utils/ErrorHandler';
 import { catchAsync } from '../utils/catchAsync';
 
 export const createSection = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const courseId = req.params.id;
+    const courseId = req.params.courseId;
     const { title, description } = req.body;
 
     if (!courseId || !title) {

@@ -10,12 +10,18 @@ import quizRoutes from '../routes/quiz.route';
 import progressRoutes from '../routes/progress.route';
 import incomeRoutes from '../routes/income.route';
 import creditCardRoutes from '../routes/creditCard.route';
+import sectionRoutes from '../routes/section.route';
+import lessonRoutes from '../routes/lesson.route';
 
 const router = express.Router();
 
 router.use('/users', userRoutes);
 
 router.use('/courses', courseRoutes);
+
+router.use('/sections', sectionRoutes);
+
+router.use('/lessons', lessonRoutes);
 
 router.use('/orders', orderRoutes);
 
