@@ -190,6 +190,8 @@ export const unpublishCourse = catchAsync(async (req: Request, res: Response, ne
 });
 
 // get single course without purchase
+import { ICourseDetail } from '../interfaces/Course'; // interface mới
+
 export const getSingleCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const courseId = req.params.id;
 
@@ -197,10 +199,9 @@ export const getSingleCourse = catchAsync(async (req: Request, res: Response, ne
         return next(new ErrorHandler('Please provide course id', 400));
     }
 
-    // Lấy khóa học và populate section + lesson
     const course = await CourseModel.findById(courseId)
         .populate([
-            { path: 'authorId', select: 'name email avatar profession' },
+            { path: 'authorId', select: 'name email avatar profession description uploadedCourses' },
             { path: 'level', select: 'name' },
             {
                 path: 'sections',
@@ -211,36 +212,90 @@ export const getSingleCourse = catchAsync(async (req: Request, res: Response, ne
                     match: { isPublished: true },
                     options: { sort: { order: 1 } }
                 }
+            },
+            {
+                path: 'reviews',
+                populate: {
+                    path: 'user',
+                    select: 'name avatar'
+                }
             }
         ])
-        .lean<ICoursePopulated>();
+        .lean<ICourseDetail>();
 
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
     }
 
-    // Lọc videoUrl nếu không miễn phí
-    const processedSections = course.sections.map((section: any) => {
-        const filteredLessons = section.lessons.map((lesson: any) => {
-            const videoUrl = lesson.isFree ? lesson.videoUrl : undefined;
-            return {
-                ...lesson,
-                videoUrl
-            };
-        });
+    // ✅ Tính purchased (tổng số học sinh) từ tất cả khoá học của giảng viên
+    const instructorCourseIds = course.authorId.uploadedCourses || [];
+    const instructorCourses = await CourseModel.find({ _id: { $in: instructorCourseIds } }, 'purchased').lean();
+    const totalStudents = instructorCourses.reduce((sum, c) => sum + (c.purchased || 0), 0);
 
-        return {
-            ...section,
-            lessons: filteredLessons
-        };
-    });
+    const totalCourses = instructorCourseIds.length;
 
-    res.status(200).json({
+    // ✅ Lọc video URL nếu không miễn phí
+    const processedSections = course.sections.map((section) => ({
+        ...section,
+        lessons: section.lessons.map((lesson) => ({
+            ...lesson,
+            videoUrl: lesson.isFree ? lesson.videoUrl : undefined
+        }))
+    }));
+
+    const totalLessons = processedSections.reduce((sum, section) => sum + section.lessons.length, 0);
+
+    const hours = Math.floor(((course.duration as any) ?? 0) / 60);
+    const minutes = ((course.duration as any) ?? 0) % 60;
+    const durationText = `${hours}h ${minutes}m`;
+
+    // ✅ Trả về dữ liệu đầy đủ
+    const responseCourse = {
+        _id: course._id,
+        name: course.name,
+        subTitle: course.subTitle,
+        description: course.description,
+        thumbnail: course.thumbnail,
+        demoUrl: course.demoUrl,
+        price: course.price,
+        estimatedPrice: course.estimatedPrice,
+        isFree: course.isFree,
+        purchased: course.purchased ?? 0,
+        level: course.level?.name ?? null,
+        rating: course.rating ?? 0,
+        category: course.category,
+        subCategory: course.subCategory,
+        overview: course.overview || '',
+        topics: course.topics || [],
+        totalLessons,
+        durationText,
+        sections: processedSections,
+        publisher: {
+            name: course.authorId.name,
+            avatar: course.authorId.avatar,
+            email: course.authorId.email,
+            profession: course.authorId.profession,
+            description: course.authorId.introduce || '',
+            rating: course.rating ?? 0,
+            reviews: course.reviews.length,
+            students: totalStudents,
+            courses: totalCourses
+        },
+        reviews: course.reviews.map((r) => ({
+            _id: r._id,
+            rating: r.rating,
+            comment: r.comment,
+            user: {
+                name: r.user?.name,
+                avatar: r.user?.avatar
+            },
+            commentReplies: r.commentReplies || []
+        }))
+    };
+
+    return res.status(200).json({
         success: true,
-        course: {
-            ...course,
-            sections: processedSections
-        }
+        courses: responseCourse
     });
 });
 
@@ -1306,9 +1361,7 @@ export const getTopCourses = catchAsync(async (req: Request, res: Response, next
 
     res.status(200).json({
         success: true,
-        data: {
-            topCourses: coursesWithDetails
-        }
+        courses: coursesWithDetails
     });
 });
 

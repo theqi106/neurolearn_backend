@@ -52,9 +52,17 @@ const CourseSchema = new Schema<ICourse>(
         isFree: { type: Boolean, default: false },
         category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
         subCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'SubCategory' },
+        overview: {
+            type: String,
+            default: ''
+        },
+        topics: {
+            type: [String], // mảng chuỗi
+            default: []
+        },
         duration: {
             type: Number,
-            default: 0 
+            default: 0
         }
     },
     { timestamps: true }
